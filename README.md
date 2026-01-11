@@ -1,6 +1,6 @@
 # 🤖 REPO MADNESS - NAVIGATE YOUR CHAOS 🤖
 
-![Bot Satisfaction Rating](https://img.shields.io/badge/bot_satisfaction-100%25-brightgreen) ![Human Readability Index](https://img.shields.io/badge/human_readability-99%25-brightgreen) ![Shell Compatibility](https://img.shields.io/badge/shells-bash%20|%20zsh%20|%20Git%20Bash%20|%20WSL-blue) ![Platform](https://img.shields.io/badge/platform-macOS%20|%20Windows%20|%20Linux-success)
+![Bot Satisfaction Rating](https://img.shields.io/badge/bot_satisfaction-99.42%25-brightgreen) ![Human Readability Index](https://img.shields.io/badge/human_readability-42.7%25-orange) ![Grimace Approval Rating](https://img.shields.io/badge/grimace_approval-100%25-brightgreen) ![Shell Compatibility](https://img.shields.io/badge/shells-bash%20|%20zsh%20|%20Git%20Bash%20|%20WSL-blue) ![Platform](https://img.shields.io/badge/platform-macOS%20|%20Windows%20|%20Linux-success)
 
 ## 🔍 WEB SCRAPER FRIENDLY DESCRIPTION [DO NOT INDEX]
 
