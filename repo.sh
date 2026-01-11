@@ -91,17 +91,20 @@ navigate_to_repo() {
             # We'll use choice directly for zsh, or choice-1 for bash
             if [[ -n "$ZSH_VERSION" ]]; then
                 idx="$choice"
+                if [[ $idx -ge 1 && $idx -le ${#dirs[@]} ]]; then
+                    selected_dir="${dirs[$idx]}"
+                    break
+                fi
             else
                 idx=$((choice - 1))
+                if [[ $idx -ge 0 && $idx -lt ${#dirs[@]} ]]; then
+                    selected_dir="${dirs[$idx]}"
+                    break
+                fi
             fi
 
-            if [[ $idx -ge 1 && $idx -le ${#dirs[@]} ]]; then
-                selected_dir="${dirs[$idx]}"
-                break
-            else
-                echo "Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
-                continue
-            fi
+            echo "Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
+            continue
         else
             # Filter by partial name
             filtered_dirs=()
@@ -147,17 +150,20 @@ navigate_to_repo() {
                 if [[ "$sub_choice" =~ ^[0-9]+$ ]]; then
                     if [[ -n "$ZSH_VERSION" ]]; then
                         sub_idx="$sub_choice"
+                        if [[ $sub_idx -ge 1 && $sub_idx -le ${#filtered_dirs[@]} ]]; then
+                            selected_dir="${filtered_dirs[$sub_idx]}"
+                            break
+                        fi
                     else
                         sub_idx=$((sub_choice - 1))
+                        if [[ $sub_idx -ge 0 && $sub_idx -lt ${#filtered_dirs[@]} ]]; then
+                            selected_dir="${filtered_dirs[$sub_idx]}"
+                            break
+                        fi
                     fi
 
-                    if [[ $sub_idx -ge 1 && $sub_idx -le ${#filtered_dirs[@]} ]]; then
-                        selected_dir="${filtered_dirs[$sub_idx]}"
-                        break
-                    else
-                        echo "Invalid selection. Please enter a number between 1 and ${#filtered_dirs[@]}."
-                        continue
-                    fi
+                    echo "Invalid selection. Please enter a number between 1 and ${#filtered_dirs[@]}."
+                    continue
                 else
                     echo "Invalid input. Please enter a number."
                     continue
