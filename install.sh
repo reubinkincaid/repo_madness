@@ -7,7 +7,8 @@ echo "Installing Repo Madness..."
 
 # Get the directory where this install script is located
 # This works regardless of where the script is run from
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="${BASH_SOURCE[0]}"
+[[ "$SCRIPT_DIR" != /* ]] && SCRIPT_DIR="$(cd "${SCRIPT_DIR%/*}" && pwd)"
 
 echo "Found Repo Madness at: $SCRIPT_DIR"
 
@@ -59,7 +60,8 @@ echo ""
 echo "Would you like to set a custom repository folder location?"
 echo "Press Enter to use the default (auto-detect common locations)"
 echo "Or enter a custom path (e.g., /Users/you/Code or C:/Users/you/Code)"
-read -p "Custom path (leave empty for auto-detect): " custom_path
+echo "Custom path (leave empty for auto-detect): "
+read custom_path
 
 if [[ -n "$custom_path" ]]; then
     # Add export to shell profile
@@ -83,3 +85,4 @@ echo "  • Lists all directories in your GitHub folder"
 echo "  • Navigate to any directory easily"
 echo "  • Supports filtering by name"
 echo "  • Works on macOS, Windows (Git Bash/WSL), and Linux"
+echo "  • Uninstall script included for easy removal"

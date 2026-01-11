@@ -53,6 +53,41 @@ cd repo_madness
 source ~/.bashrc
 ```
 
+## 🗑️ Uninstallation
+
+To remove Repo Madness:
+
+```bash
+cd repo_madness
+./uninstall.sh
+```
+
+The uninstall script will:
+- Remove the alias from your shell profile
+- Remove any custom path configuration
+- Provide a command to manually delete the repo folder (for safety)
+
+**Why manual folder deletion?**
+
+For safety and cross-platform compatibility, the script doesn't automatically delete files. After running the uninstall script, you'll be shown a command like:
+
+```bash
+rm -rf "/path/to/repo_madness"
+```
+
+Run this command to complete the uninstallation.
+
+**Manual uninstallation:**
+
+1. Remove these lines from your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
+   ```bash
+   # Repo Madness - Quick access to GitHub repositories
+   alias repo='source "/path/to/repo_madness/repo.sh"'
+   export REPO_MADNESS_PATH="/your/custom/path"  # if you set one
+   ```
+2. Delete the repo folder: `rm -rf ~/repo_madness`
+3. Reload your shell: `source ~/.zshrc`
+
 ## 🚀 Features
 
 - **Automatic Shell Detection**: Works with Bash, Zsh, Git Bash, and WSL
@@ -181,6 +216,7 @@ To use on Windows with Git Bash:
 
 - `repo.sh` - Main script (pure bash, works everywhere)
 - `install.sh` - Automated installer
+- `uninstall.sh` - Automated uninstaller
 - `README.md` - This file
 
 ## 📋 Requirements
