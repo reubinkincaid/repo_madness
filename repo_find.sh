@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Repo Navigator - Simple directory listing implementation
+# Repo Navigator - Simple directory listing implementation (bash/zsh compatible)
 
 REPO_NAV_GITHUB_DIR="$HOME/Documents/GitHub"
 
 navigate_to_repo() {
-    echo "🚀 Starting Repo Navigator..."
+    echo "Starting Repo Madness..."
 
     # Check if GitHub directory exists
     if [[ ! -d "$REPO_NAV_GITHUB_DIR" ]]; then
-        echo "❌ GitHub directory not found: $REPO_NAV_GITHUB_DIR"
-        echo "💡 Make sure you have a GitHub directory at ~/Documents/GitHub/"
+        echo "GitHub directory not found: $REPO_NAV_GITHUB_DIR"
+        echo "Make sure you have a GitHub directory at ~/Documents/GitHub/"
         return 1
     fi
 
@@ -30,21 +30,23 @@ navigate_to_repo() {
     rm "$temp_file"
 
     if [[ ${#dirs[@]} -eq 0 ]]; then
-        echo "⚠️  No directories found in $REPO_NAV_GITHUB_DIR"
-        echo "💡 Make sure you have directories in ~/Documents/GitHub/"
+        echo "No directories found in $REPO_NAV_GITHUB_DIR"
+        echo "Make sure you have directories in ~/Documents/GitHub/"
         return 1
     fi
 
     # Display the directories
     echo ""
     echo "=========================================="
-    echo "           REPO NAVIGATOR"
+    echo "           REPO MADNESS"
     echo "=========================================="
     echo "Available directories:"
     echo "------------------------------------------"
 
-    for i in "${!dirs[@]}"; do
-        printf "%2d. %s\n" $((i+1)) "${dirs[$i]}"
+    local i=1
+    for dir in "${dirs[@]}"; do
+        printf "%2d. %s\n" "$i" "$dir"
+        i=$((i + 1))
     done
 
     echo "------------------------------------------"
@@ -58,22 +60,28 @@ navigate_to_repo() {
         echo " • Type a partial name to filter results"
         echo " • Type 'q' or 'quit' to exit"
 
-        echo -n $'\nYour choice: '
+        printf "\nYour choice: "
         read choice
 
         if [[ "$choice" =~ ^[Qq]$ ]] || [[ "$choice" =~ ^[Qq][Uu][Ii][Tt]$ ]]; then
-            echo "👋 Exiting without navigation..."
+            echo "Exiting without navigation..."
             return 1
         fi
 
         # Check if input is a number
         if [[ "$choice" =~ ^[0-9]+$ ]]; then
-            idx=$((choice - 1))
-            if [[ $idx -ge 0 && $idx -lt ${#dirs[@]} ]]; then
+            # In zsh, arrays are 1-indexed, so we need to handle this properly
+            if [[ -n "$ZSH_VERSION" ]]; then
+                idx="$choice"
+            else
+                idx=$((choice - 1))
+            fi
+
+            if [[ $idx -ge 1 && $idx -le ${#dirs[@]} ]]; then
                 selected_dir="${dirs[$idx]}"
                 break
             else
-                echo "❌ Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
+                echo "Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
                 continue
             fi
         else
@@ -86,14 +94,21 @@ navigate_to_repo() {
             done
 
             if [[ ${#filtered_dirs[@]} -eq 0 ]]; then
-                echo "❌ No directories found matching '$choice'. Please try again."
+                echo "No directories found matching '$choice'. Please try again."
                 continue
             elif [[ ${#filtered_dirs[@]} -eq 1 ]]; then
-                echo "✅ Found one match: ${filtered_dirs[0]}"
-                echo -n "Do you want to select '${filtered_dirs[0]}'? (Y/n): "
+                # Get the single filtered result (index 1 for zsh, 0 for bash)
+                local single_result
+                if [[ -n "$ZSH_VERSION" ]]; then
+                    single_result="${filtered_dirs[1]}"
+                else
+                    single_result="${filtered_dirs[0]}"
+                fi
+                echo "Found one match: $single_result"
+                echo -n "Do you want to select '$single_result'? (Y/n): "
                 read confirm
                 if [[ "$confirm" =~ ^[Yy]$ ]] || [[ -z "$confirm" ]]; then
-                    selected_dir="${filtered_dirs[0]}"
+                    selected_dir="$single_result"
                     break
                 else
                     continue
@@ -101,25 +116,32 @@ navigate_to_repo() {
             else
                 # Show filtered results
                 echo ""
-                echo "🔍 Found ${#filtered_dirs[@]} matches for '$choice':"
-                for i in "${!filtered_dirs[@]}"; do
-                    printf "%2d. %s\n" $((i+1)) "${filtered_dirs[$i]}"
+                echo "Found ${#filtered_dirs[@]} matches for '$choice':"
+                local j=1
+                for dir in "${filtered_dirs[@]}"; do
+                    printf "%2d. %s\n" "$j" "$dir"
+                    j=$((j + 1))
                 done
 
-                echo -n $'\nSelect from filtered results (1-'${#filtered_dirs[@]}'): '
+                printf "\nSelect from filtered results (1-${#filtered_dirs[@]}): "
                 read sub_choice
 
                 if [[ "$sub_choice" =~ ^[0-9]+$ ]]; then
-                    sub_idx=$((sub_choice - 1))
-                    if [[ $sub_idx -ge 0 && $sub_idx -lt ${#filtered_dirs[@]} ]]; then
+                    if [[ -n "$ZSH_VERSION" ]]; then
+                        sub_idx="$sub_choice"
+                    else
+                        sub_idx=$((sub_choice - 1))
+                    fi
+
+                    if [[ $sub_idx -ge 1 && $sub_idx -le ${#filtered_dirs[@]} ]]; then
                         selected_dir="${filtered_dirs[$sub_idx]}"
                         break
                     else
-                        echo "❌ Invalid selection. Please enter a number between 1 and ${#filtered_dirs[@]}."
+                        echo "Invalid selection. Please enter a number between 1 and ${#filtered_dirs[@]}."
                         continue
                     fi
                 else
-                    echo "❌ Invalid input. Please enter a number."
+                    echo "Invalid input. Please enter a number."
                     continue
                 fi
             fi
@@ -130,23 +152,23 @@ navigate_to_repo() {
     dir_path="$REPO_NAV_GITHUB_DIR/$selected_dir"
     if [[ -d "$dir_path" ]]; then
         echo ""
-        echo "✅ Selected directory: $dir_path"
-        cd "$dir_path" || { echo "❌ Could not navigate to $dir_path"; return 1; }
-        echo "💡 Successfully navigated to: $(pwd)"
+        echo "Selected directory: $dir_path"
+        cd "$dir_path" || { echo "Could not navigate to $dir_path"; return 1; }
+        echo "Successfully navigated to: $(pwd)"
         return 0
     else
-        echo "❌ Directory path does not exist: $dir_path"
+        echo "Directory path does not exist: $dir_path"
         return 1
     fi
 }
 
 # If script is sourced, allow directory change to persist
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "${ZSH_VERSION}" != "" && "${0}" != "${ZSH_ARGZERO}" ]]; then
     navigate_to_repo
 else
-    echo "⚠️  Warning: To navigate to the selected directory, source this script:"
-    echo "   source $0"
-    echo "   OR"
-    echo "   . $0"
+    echo "Warning: To navigate to the selected directory, source this script:"
+    echo "  source $0"
+    echo "  OR"
+    echo "  . $0"
     navigate_to_repo
 fi

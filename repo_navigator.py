@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Repo Navigator - A tool to easily navigate between GitHub repositories
+Repo Madness - A tool to easily navigate between GitHub repositories
 """
 
 import os
@@ -36,7 +36,7 @@ def display_repos(repos):
         return
 
     print("\n" + "="*50)
-    print("           REPO NAVIGATOR")
+    print("           REPO MADNESS")
     print("="*50)
     print("Available repositories:")
     print("-" * 50)
@@ -85,18 +85,18 @@ def select_repo(repos):
                 if 0 <= index < len(repos):
                     return repos[index]
                 else:
-                    print(f"❌ Invalid selection. Please enter a number between 1 and {len(repos)}.")
+                    print(f"Invalid selection. Please enter a number between 1 and {len(repos)}.")
                     continue
             else:
                 # Treat as a filter/partial name
                 filtered_repos = [repo for repo in repos if choice.lower() in repo.lower()]
 
                 if not filtered_repos:
-                    print(f"❌ No repositories found matching '{choice}'. Please try again.")
+                    print(f"No repositories found matching '{choice}'. Please try again.")
                     continue
                 elif len(filtered_repos) == 1:
                     # If only one match, select it directly
-                    print(f"✅ Found one match: {filtered_repos[0]}")
+                    print(f"Found one match: {filtered_repos[0]}")
                     confirm = input(f"Do you want to select '{filtered_repos[0]}'? (Y/n): ").strip().lower()
                     if confirm in ['', 'y', 'yes']:
                         return filtered_repos[0]
@@ -104,7 +104,7 @@ def select_repo(repos):
                         continue
                 else:
                     # Show filtered results
-                    print(f"\n🔍 Found {len(filtered_repos)} matches for '{choice}':")
+                    print(f"\nFound {len(filtered_repos)} matches for '{choice}':")
                     for i, repo in enumerate(filtered_repos, 1):
                         print(f"{i:2d}. {repo}")
 
@@ -119,17 +119,17 @@ def select_repo(repos):
                         if 0 <= idx < len(filtered_repos):
                             return filtered_repos[idx]
                         else:
-                            print(f"❌ Invalid selection. Please enter a number between 1 and {len(filtered_repos)}.")
+                            print(f"Invalid selection. Please enter a number between 1 and {len(filtered_repos)}.")
                             continue
                     else:
-                        print("❌ Invalid input. Please enter a number or press Enter to see all repos.")
+                        print("Invalid input. Please enter a number or press Enter to see all repos.")
                         continue
 
         except KeyboardInterrupt:
-            print("\n\n👋 Exiting...")
+            print("\n\nExiting...")
             return None
         except Exception as e:
-            print(f"❌ An error occurred: {e}")
+            print(f"An error occurred: {e}")
             continue
 
 

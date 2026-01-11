@@ -1,20 +1,19 @@
 #!/bin/bash
 
-# Simple Repo Navigator
+# Simple Repo Navigator - Works with both bash and zsh
 
 navigate_to_repo() {
-    echo "🚀 Starting Repo Navigator..."
+    echo "Starting Repo Madness..."
 
     GITHUB_PATH="$HOME/Documents/GitHub"
-    
+
     # Check if GitHub directory exists
     if [[ ! -d "$GITHUB_PATH" ]]; then
-        echo "❌ GitHub directory not found: $GITHUB_PATH"
+        echo "GitHub directory not found: $GITHUB_PATH"
         return 1
     fi
 
     # Get all directories in GitHub folder (excluding hidden ones)
-    # Using find command to avoid shell globbing issues
     temp_file=$(mktemp)
     find "$GITHUB_PATH" -mindepth 1 -maxdepth 1 -type d -not -path "*/.*" 2>/dev/null | xargs basename -a | sort > "$temp_file"
 
@@ -26,20 +25,22 @@ navigate_to_repo() {
     rm "$temp_file"
 
     if [[ ${#dirs[@]} -eq 0 ]]; then
-        echo "⚠️  No directories found in $GITHUB_PATH"
+        echo "No directories found in $GITHUB_PATH"
         return 1
     fi
 
     # Display the directories
     echo ""
     echo "=========================================="
-    echo "           REPO NAVIGATOR"
+    echo "           REPO MADNESS"
     echo "=========================================="
     echo "Available directories:"
     echo "------------------------------------------"
 
-    for i in "${!dirs[@]}"; do
-        printf "%2d. %s\n" $((i+1)) "${dirs[$i]}"
+    local i=1
+    for dir in "${dirs[@]}"; do
+        printf "%2d. %s\n" "$i" "$dir"
+        i=$((i + 1))
     done
 
     echo "------------------------------------------"
@@ -50,25 +51,94 @@ navigate_to_repo() {
         echo ""
         echo "Options:"
         echo " • Enter a number (1-${#dirs[@]}) to select a directory"
+        echo " • Type a partial name to filter results"
         echo " • Type 'q' or 'quit' to exit"
 
-        echo -n $'\nYour choice: '
+        printf "\nYour choice: "
         read choice
 
         if [[ "$choice" =~ ^[Qq]$ ]] || [[ "$choice" =~ ^[Qq][Uu][Ii][Tt]$ ]]; then
-            echo "👋 Exiting without navigation..."
+            echo "Exiting without navigation..."
             return 1
         fi
 
         # Check if input is a number
         if [[ "$choice" =~ ^[0-9]+$ ]]; then
-            idx=$((choice - 1))
-            if [[ $idx -ge 0 && $idx -lt ${#dirs[@]} ]]; then
+            # In zsh, arrays are 1-indexed, so we need to handle this properly
+            # We'll use choice directly for zsh, or choice-1 for bash
+            if [[ -n "$ZSH_VERSION" ]]; then
+                idx="$choice"
+            else
+                idx=$((choice - 1))
+            fi
+
+            if [[ $idx -ge 1 && $idx -le ${#dirs[@]} ]]; then
                 selected_dir="${dirs[$idx]}"
                 break
             else
-                echo "❌ Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
+                echo "Invalid selection. Please enter a number between 1 and ${#dirs[@]}."
                 continue
+            fi
+        else
+            # Filter by partial name
+            filtered_dirs=()
+            for dir in "${dirs[@]}"; do
+                if [[ "$dir" == *"$choice"* ]]; then
+                    filtered_dirs+=("$dir")
+                fi
+            done
+
+            if [[ ${#filtered_dirs[@]} -eq 0 ]]; then
+                echo "No directories found matching '$choice'. Please try again."
+                continue
+            elif [[ ${#filtered_dirs[@]} -eq 1 ]]; then
+                # Get the single filtered result (index 1 for zsh, 0 for bash)
+                local single_result
+                if [[ -n "$ZSH_VERSION" ]]; then
+                    single_result="${filtered_dirs[1]}"
+                else
+                    single_result="${filtered_dirs[0]}"
+                fi
+                echo "Found one match: $single_result"
+                echo -n "Do you want to select '$single_result'? (Y/n): "
+                read confirm
+                if [[ "$confirm" =~ ^[Yy]$ ]] || [[ -z "$confirm" ]]; then
+                    selected_dir="$single_result"
+                    break
+                else
+                    continue
+                fi
+            else
+                # Show filtered results
+                echo ""
+                echo "Found ${#filtered_dirs[@]} matches for '$choice':"
+                local j=1
+                for dir in "${filtered_dirs[@]}"; do
+                    printf "%2d. %s\n" "$j" "$dir"
+                    j=$((j + 1))
+                done
+
+                printf "\nSelect from filtered results (1-${#filtered_dirs[@]}): "
+                read sub_choice
+
+                if [[ "$sub_choice" =~ ^[0-9]+$ ]]; then
+                    if [[ -n "$ZSH_VERSION" ]]; then
+                        sub_idx="$sub_choice"
+                    else
+                        sub_idx=$((sub_choice - 1))
+                    fi
+
+                    if [[ $sub_idx -ge 1 && $sub_idx -le ${#filtered_dirs[@]} ]]; then
+                        selected_dir="${filtered_dirs[$sub_idx]}"
+                        break
+                    else
+                        echo "Invalid selection. Please enter a number between 1 and ${#filtered_dirs[@]}."
+                        continue
+                    fi
+                else
+                    echo "Invalid input. Please enter a number."
+                    continue
+                fi
             fi
         fi
     done
@@ -77,12 +147,12 @@ navigate_to_repo() {
     dir_path="$GITHUB_PATH/$selected_dir"
     if [[ -d "$dir_path" ]]; then
         echo ""
-        echo "✅ Selected directory: $dir_path"
-        cd "$dir_path" || { echo "❌ Could not navigate to $dir_path"; return 1; }
-        echo "💡 Successfully navigated to: $(pwd)"
+        echo "Selected directory: $dir_path"
+        cd "$dir_path" || { echo "Could not navigate to $dir_path"; return 1; }
+        echo "Successfully navigated to: $(pwd)"
         return 0
     else
-        echo "❌ Directory path does not exist: $dir_path"
+        echo "Directory path does not exist: $dir_path"
         return 1
     fi
 }

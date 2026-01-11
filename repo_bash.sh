@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Repo Navigator - Pure bash implementation for navigating GitHub repositories
+# Repo Navigator - Implementation with git info (bash/zsh compatible)
 
 GITHUB_DIR="$HOME/Documents/GitHub"
 
 navigate_to_repo() {
-    echo "🚀 Starting Repo Navigator..."
+    echo "Starting Repo Madness..."
 
     # Check if GitHub directory exists
     if [[ ! -d "$GITHUB_DIR" ]]; then
-        echo "❌ GitHub directory not found: $GITHUB_DIR"
-        echo "💡 Make sure you have a GitHub directory at ~/Documents/GitHub/"
+        echo " GitHub directory not found: $GITHUB_DIR"
+        echo " Make sure you have a GitHub directory at ~/Documents/GitHub/"
         return 1
     fi
 
@@ -29,8 +29,8 @@ navigate_to_repo() {
     rm "$temp_file"
 
     if [[ ${#repos[@]} -eq 0 ]]; then
-        echo "⚠️  No repositories found in $GITHUB_DIR"
-        echo "💡 Make sure your repositories have a .git folder"
+        echo "  No repositories found in $GITHUB_DIR"
+        echo " Make sure your repositories have a .git folder"
         return 1
     fi
 
@@ -57,15 +57,17 @@ navigate_to_repo() {
     # Display the repositories
     echo ""
     echo "=========================================="
-    echo "           REPO NAVIGATOR"
+    echo "           REPO MADNESS"
     echo "=========================================="
     echo "Available repositories:"
     echo "------------------------------------------"
 
-    for ((i = 0; i < ${#repos[@]}; i++)); do
-        repo_path="$GITHUB_DIR/${repos[$i]}"
+    local i=1
+    for repo in "${repos[@]}"; do
+        repo_path="$GITHUB_DIR/$repo"
         git_info=$(get_git_info "$repo_path")
-        printf "%2d. %s%s\n" $((i+1)) "${repos[$i]}" "$git_info"
+        printf "%2d. %s%s\n" "$i" "$repo" "$git_info"
+        i=$((i + 1))
     done
 
     echo "------------------------------------------"
@@ -79,11 +81,11 @@ navigate_to_repo() {
         echo " • Type a partial name to filter results"
         echo " • Type 'q' or 'quit' to exit"
 
-        echo -n $'\nYour choice: '
+        printf "\nYour choice: "
         read choice
 
         if [[ "$choice" =~ ^[Qq]$ ]] || [[ "$choice" =~ ^[Qq][Uu][Ii][Tt]$ ]]; then
-            echo "👋 Exiting without navigation..."
+            echo " Exiting without navigation..."
             return 1
         fi
 
@@ -94,7 +96,7 @@ navigate_to_repo() {
                 selected_repo="${repos[$idx]}"
                 break
             else
-                echo "❌ Invalid selection. Please enter a number between 1 and ${#repos[@]}."
+                echo " Invalid selection. Please enter a number between 1 and ${#repos[@]}."
                 continue
             fi
         else
@@ -107,7 +109,7 @@ navigate_to_repo() {
             done
 
             if [[ ${#filtered_repos[@]} -eq 0 ]]; then
-                echo "❌ No repositories found matching '$choice'. Please try again."
+                echo " No repositories found matching '$choice'. Please try again."
                 continue
             elif [[ ${#filtered_repos[@]} -eq 1 ]]; then
                 echo "✅ Found one match: ${filtered_repos[0]}"
@@ -122,12 +124,14 @@ navigate_to_repo() {
             else
                 # Show filtered results
                 echo ""
-                echo "🔍 Found ${#filtered_repos[@]} matches for '$choice':"
-                for i in "${!filtered_repos[@]}"; do
-                    printf "%2d. %s\n" $((i+1)) "${filtered_repos[$i]}"
+                echo " Found ${#filtered_repos[@]} matches for '$choice':"
+                local j=1
+                for repo in "${filtered_repos[@]}"; do
+                    printf "%2d. %s\n" "$j" "$repo"
+                    j=$((j + 1))
                 done
 
-                echo -n $'\nSelect from filtered results (1-'${#filtered_repos[@]}'): '
+                printf "\nSelect from filtered results (1-${#filtered_repos[@]}): "
                 read sub_choice
 
                 if [[ "$sub_choice" =~ ^[0-9]+$ ]]; then
@@ -136,11 +140,11 @@ navigate_to_repo() {
                         selected_repo="${filtered_repos[$sub_idx]}"
                         break
                     else
-                        echo "❌ Invalid selection. Please enter a number between 1 and ${#filtered_repos[@]}."
+                        echo " Invalid selection. Please enter a number between 1 and ${#filtered_repos[@]}."
                         continue
                     fi
                 else
-                    echo "❌ Invalid input. Please enter a number."
+                    echo " Invalid input. Please enter a number."
                     continue
                 fi
             fi
@@ -152,20 +156,20 @@ navigate_to_repo() {
     if [[ -d "$repo_path" ]]; then
         echo ""
         echo "✅ Selected repository: $repo_path"
-        cd "$repo_path" || { echo "❌ Could not navigate to $repo_path"; return 1; }
-        echo "💡 Successfully navigated to: $(pwd)"
+        cd "$repo_path" || { echo " Could not navigate to $repo_path"; return 1; }
+        echo " Successfully navigated to: $(pwd)"
         return 0
     else
-        echo "❌ Repository path does not exist: $repo_path"
+        echo " Repository path does not exist: $repo_path"
         return 1
     fi
 }
 
 # If script is sourced, allow directory change to persist
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "${ZSH_VERSION}" != "" && "${0}" != "${ZSH_ARGZERO}" ]]; then
     navigate_to_repo
 else
-    echo "⚠️  Warning: To navigate to the selected repository, source this script:"
+    echo "  Warning: To navigate to the selected repository, source this script:"
     echo "   source $0"
     echo "   OR"
     echo "   . $0"
