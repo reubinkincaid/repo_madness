@@ -1,11 +1,18 @@
 #!/bin/bash
 
 # Installation script for Repo Madness
+# This script automatically detects the installation directory and sets up the alias
 
 echo "Installing Repo Madness..."
 
-# Make the repo script executable
-chmod +x repo_find.sh
+# Get the directory where this install script is located
+# This works regardless of where the script is run from
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "Found Repo Madness at: $SCRIPT_DIR"
+
+# Make the main script executable
+chmod +x "$SCRIPT_DIR/repo_simple.sh"
 
 # Determine the shell profile file to modify
 SHELL_PROFILE=""
@@ -25,7 +32,7 @@ fi
 echo "Found shell profile: $SHELL_PROFILE"
 
 # Add the alias to the shell profile if it doesn't already exist
-ALIAS_LINE="alias repo='source /Users/studio/Documents/GitHub/repo_madness/repo_simple.sh'"
+ALIAS_LINE="alias repo='source \"$SCRIPT_DIR/repo_simple.sh\"'"
 
 if ! grep -q "alias repo=" "$SHELL_PROFILE"; then
     echo "" >> "$SHELL_PROFILE"
@@ -35,8 +42,29 @@ if ! grep -q "alias repo=" "$SHELL_PROFILE"; then
 else
     echo "Alias already exists in $SHELL_PROFILE"
     # Update the existing alias to point to the current location
-    sed -i.bak "s|alias repo=.*|${ALIAS_LINE//\//\\/}|" "$SHELL_PROFILE"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS requires -i.bak for sed
+        sed -i.bak "s|alias repo=.*|${ALIAS_LINE//\\//\\\\/}|" "$SHELL_PROFILE"
+    else
+        # Linux can use -i without backup
+        sed -i "s|alias repo=.*|${ALIAS_LINE//\\//\\\\/}|" "$SHELL_PROFILE"
+    fi
     echo "Updated existing alias in $SHELL_PROFILE"
+fi
+
+# Check if user wants to set a custom repository path
+echo ""
+echo "Would you like to set a custom repository folder location?"
+echo "Press Enter to use the default (auto-detect common locations)"
+echo "Or enter a custom path (e.g., /Users/you/Code)"
+read -p "Custom path (leave empty for auto-detect): " custom_path
+
+if [[ -n "$custom_path" ]]; then
+    # Add export to shell profile
+    echo "" >> "$SHELL_PROFILE"
+    echo "# Repo Madness custom path" >> "$SHELL_PROFILE"
+    echo "export REPO_MADNESS_PATH=\"$custom_path\"" >> "$SHELL_PROFILE"
+    echo "Custom path added to $SHELL_PROFILE"
 fi
 
 echo ""

@@ -5,11 +5,33 @@
 navigate_to_repo() {
     echo "Starting Repo Madness..."
 
-    GITHUB_PATH="$HOME/Documents/GitHub"
+    # Determine the repository directory
+    # Priority: 1. REPO_MADNESS_PATH env var, 2. Auto-detect common locations
+    if [[ -n "$REPO_MADNESS_PATH" ]]; then
+        GITHUB_PATH="$REPO_MADNESS_PATH"
+    else
+        # Auto-detect: check common locations
+        for path in "$HOME/Documents/GitHub" "$HOME/GitHub" "$HOME/Code" "$HOME/Projects" "$HOME/src" "$HOME/workspace"; do
+            if [[ -d "$path" ]]; then
+                GITHUB_PATH="$path"
+                break
+            fi
+        done
+    fi
 
-    # Check if GitHub directory exists
+    # Check if we found a valid directory
+    if [[ -z "$GITHUB_PATH" ]]; then
+        echo "Could not find your repositories folder."
+        echo ""
+        echo "Please either:"
+        echo "  1. Create one of the standard locations: ~/Documents/GitHub, ~/GitHub, ~/Code, etc."
+        echo "  2. Set REPO_MADNESS_PATH in your shell profile:"
+        echo "     export REPO_MADNESS_PATH=\"/path/to/your/repos\""
+        return 1
+    fi
+
     if [[ ! -d "$GITHUB_PATH" ]]; then
-        echo "GitHub directory not found: $GITHUB_PATH"
+        echo "Directory not found: $GITHUB_PATH"
         return 1
     fi
 
@@ -34,6 +56,7 @@ navigate_to_repo() {
     echo "=========================================="
     echo "           REPO MADNESS"
     echo "=========================================="
+    echo "Scanning: $GITHUB_PATH"
     echo "Available directories:"
     echo "------------------------------------------"
 
