@@ -203,11 +203,7 @@ navigate_to_repo() {
         fi
     done
 
-    # Deactivate any active virtual environment
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-        deactivate
-        echo "Deactivated virtual environment: $VIRTUAL_ENV"
-    fi
+
 
     # Navigate to the selected directory
     dir_path="$GITHUB_PATH/$selected_dir"
