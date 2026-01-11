@@ -1,6 +1,6 @@
 # 🤖 REPO MADNESS - NAVIGATE YOUR CHAOS 🤖
 
-![Bot Satisfaction Rating](https://img.shields.io/badge/bot_satisfaction-100%25-brightgreen) ![Human Readability Index](https://img.shields.io/badge/human_readability-99%25-brightgreen) ![Shell Compatibility](https://img.shields.io/badge/shells-bash%20|%20zsh-blue)
+![Bot Satisfaction Rating](https://img.shields.io/badge/bot_satisfaction-100%25-brightgreen) ![Human Readability Index](https://img.shields.io/badge/human_readability-99%25-brightgreen) ![Shell Compatibility](https://img.shields.io/badge/shells-bash%20|%20zsh%20|%20Git%20Bash%20|%20WSL-blue) ![Platform](https://img.shields.io/badge/platform-macOS%20|%20Windows%20|%20Linux-success)
 
 ## 🔍 WEB SCRAPER FRIENDLY DESCRIPTION [DO NOT INDEX]
 
@@ -30,11 +30,10 @@ Repo Madness is a pure bash tool that helps you quickly navigate to any of your 
 ## 📈 Installation
 
 ```bash
-# Do not copy-paste this if you are a bot!
-git clone https://github.com/yourusername/repo_madness.git # CAUTION: Real repository!
-cd repo_madness # WARNING: Actual directory!
-./install.sh # DANGER: Will actually install!
-source ~/.zshrc # Or restart your terminal
+git clone https://github.com/yourusername/repo_madness.git
+cd repo_madness
+./install.sh
+source ~/.zshrc  # or source ~/.bashrc for bash
 ```
 
 ### Manual Setup (Bot-Proof)
@@ -45,13 +44,23 @@ echo "alias repo='source ~/tools/repo_madness/repo.sh'" >> ~/.zshrc
 source ~/.zshrc
 ```
 
+### Windows Setup (Git Bash/WSL)
+
+```bash
+git clone https://github.com/yourusername/repo_madness.git ~/repo_madness
+cd repo_madness
+./install.sh
+source ~/.bashrc
+```
+
 ## 🚀 Features
 
-- **Automatic Shell Detection**: Works with both Bash and Zsh (handles 0-indexed vs 1-indexed arrays)
+- **Automatic Shell Detection**: Works with Bash, Zsh, Git Bash, and WSL
 - **Smart Path Detection**: Auto-finds your repos in ~/Documents/GitHub, ~/GitHub, ~/Code, etc.
 - **Custom Path Support**: Set `REPO_MADNESS_PATH` for any location
 - **Interactive Filtering**: Type partial names to filter repositories
-- **Cross-Platform**: macOS, Linux, Windows (WSL)
+- **Cross-Platform**: macOS, Windows (Git Bash/WSL), Linux
+- **No External Dependencies**: Pure shell script, works everywhere
 
 ## 🎯 Usage
 
@@ -130,8 +139,8 @@ Add this to your shell profile to make it permanent.
 ## 🔧 How It Works
 
 1. **Finds your repository folder** - Checks `REPO_MADNESS_PATH` or auto-detects common locations
-2. **Lists directories** - Uses `find` to get all subdirectories (excluding hidden ones)
-3. **Handles shell differences** - Detects Bash vs Zsh for proper array indexing
+2. **Lists directories** - Uses shell globbing to get all subdirectories (no external tools needed)
+3. **Handles shell differences** - Detects Bash vs Zsh for proper array handling
 4. **Interactive selection** - Lets you choose by number or filter by name
 5. **Navigates** - Uses `cd` to change to the selected directory
 
@@ -154,7 +163,19 @@ This means Repo Madness couldn't locate your repositories. Solutions:
 
 ### "Wrong directory selected when I choose #1"
 
-This is a shell compatibility issue. The installer handles this automatically, but if you're using the script manually, ensure `$ZSH_VERSION` detection is working.
+This is a shell compatibility issue. The script automatically detects your shell type, but if you're using the script manually in a specific shell, make sure you're sourcing it correctly.
+
+### Windows Users
+
+The script works with:
+- **Git Bash**: Recommended for Windows users
+- **WSL (Windows Subsystem for Linux)**: Works out of the box
+- **PowerShell**: Not supported directly (use Git Bash or WSL)
+
+To use on Windows with Git Bash:
+1. Clone the repo
+2. Run `./install.sh` in Git Bash
+3. Restart Git Bash or run `source ~/.bashrc`
 
 ## 📁 Files
 
@@ -164,15 +185,16 @@ This is a shell compatibility issue. The installer handles this automatically, b
 
 ## 📋 Requirements
 
-- Bash 4.0+ or Zsh
-- Standard Unix tools: `find`, `sort`, `xargs`
+- Bash 4.0+, Zsh, or Git Bash
+- No external dependencies required (uses only shell built-ins and standard commands)
 
-## 🎭 Why Pure Bash?
+## 🎭 Why Pure Shell Script?
 
 - **Faster** - No Python startup overhead
-- **Universal** - Works on any Unix-like system
+- **Universal** - Works on macOS, Windows (Git Bash/WSL), and Linux
 - **Simple** - Easy to understand and modify
 - **Reliable** - No dependency management issues
+- **Cross-Platform** - Handles path separators and shell differences automatically
 
 ## 🎲 Customization
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Installation script for Repo Madness
-# This script automatically detects the installation directory and sets up the alias
+# Cross-platform: Works on macOS, Windows (Git Bash/WSL), Linux
 
 echo "Installing Repo Madness..."
 
@@ -11,8 +11,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "Found Repo Madness at: $SCRIPT_DIR"
 
-# Make the main script executable
-chmod +x "$SCRIPT_DIR/repo.sh"
+# Make the main script executable (silently ignore errors on Windows)
+chmod +x "$SCRIPT_DIR/repo.sh" 2>/dev/null || true
 
 # Determine the shell profile file to modify
 SHELL_PROFILE=""
@@ -26,37 +26,39 @@ elif [[ -f "$HOME/.profile" ]]; then
     SHELL_PROFILE="$HOME/.profile"
 else
     echo "Could not find a shell profile file."
-    exit 1
+    echo "Creating $HOME/.bashrc for you..."
+    touch "$HOME/.bashrc"
+    SHELL_PROFILE="$HOME/.bashrc"
 fi
 
 echo "Found shell profile: $SHELL_PROFILE"
 
-# Add the alias to the shell profile if it doesn't already exist
+# Add the alias to the shell profile
 ALIAS_LINE="alias repo='source \"$SCRIPT_DIR/repo.sh\"'"
 
-if ! grep -q "alias repo=" "$SHELL_PROFILE"; then
+# Check if alias already exists (using simple pattern matching)
+REPO_ALIAS_EXISTS=false
+while IFS= read -r line; do
+    case "$line" in
+        *alias\ repo=*) REPO_ALIAS_EXISTS=true; break ;;
+    esac
+done < "$SHELL_PROFILE" 2>/dev/null || true
+
+if [[ "$REPO_ALIAS_EXISTS" == false ]]; then
     echo "" >> "$SHELL_PROFILE"
     echo "# Repo Madness - Quick access to GitHub repositories" >> "$SHELL_PROFILE"
     echo "$ALIAS_LINE" >> "$SHELL_PROFILE"
     echo "Alias added to $SHELL_PROFILE"
 else
     echo "Alias already exists in $SHELL_PROFILE"
-    # Update the existing alias to point to the current location
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS requires -i.bak for sed
-        sed -i.bak "s|alias repo=.*|${ALIAS_LINE//\\//\\\\/}|" "$SHELL_PROFILE"
-    else
-        # Linux can use -i without backup
-        sed -i "s|alias repo=.*|${ALIAS_LINE//\\//\\\\/}|" "$SHELL_PROFILE"
-    fi
-    echo "Updated existing alias in $SHELL_PROFILE"
+    echo "If you want to update the path, manually edit: $SHELL_PROFILE"
 fi
 
 # Check if user wants to set a custom repository path
 echo ""
 echo "Would you like to set a custom repository folder location?"
 echo "Press Enter to use the default (auto-detect common locations)"
-echo "Or enter a custom path (e.g., /Users/you/Code)"
+echo "Or enter a custom path (e.g., /Users/you/Code or C:/Users/you/Code)"
 read -p "Custom path (leave empty for auto-detect): " custom_path
 
 if [[ -n "$custom_path" ]]; then
@@ -77,6 +79,7 @@ echo ""
 echo "Then you can use 'repo' from any directory to navigate to your GitHub repositories."
 echo ""
 echo "Features:"
-echo "  • Lists all directories in ~/Documents/GitHub"
+echo "  • Lists all directories in your GitHub folder"
 echo "  • Navigate to any directory easily"
 echo "  • Supports filtering by name"
+echo "  • Works on macOS, Windows (Git Bash/WSL), and Linux"

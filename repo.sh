@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simple Repo Navigator - Works with both bash and zsh
+# Simple Repo Navigator - Works with bash, zsh, and Windows (Git Bash/WSL)
 
 navigate_to_repo() {
     echo "Starting Repo Madness..."
@@ -36,20 +36,51 @@ navigate_to_repo() {
     fi
 
     # Get all directories in GitHub folder (excluding hidden ones)
-    temp_file=$(mktemp)
-    find "$GITHUB_PATH" -mindepth 1 -maxdepth 1 -type d -not -path "*/.*" 2>/dev/null | xargs basename -a | sort > "$temp_file"
-
+    # Cross-platform directory listing
+    # Build array directly
     dirs=()
-    while IFS= read -r dir_name; do
-        dirs+=("$dir_name")
-    done < "$temp_file"
+    for entry in "$GITHUB_PATH"/*; do
+        if [[ -d "$entry" ]] 2>/dev/null; then
+            dir_name="${entry##*/}"
+            case "$dir_name" in
+                .*) continue ;;
+                *) dirs+=("$dir_name") ;;
+            esac
+        fi
+    done
 
-    rm "$temp_file"
+    # Simple cross-platform sort using printf and sort
+    if command -v sort >/dev/null 2>&1; then
+        # Use external sort if available (works on macOS and Linux/WSL)
+        sorted_list=$(printf "%s\n" "${dirs[@]}" | sort)
+        dirs=()
+        while IFS= read -r line; do
+            [[ -n "$line" ]] && dirs+=("$line")
+        done <<< "$sorted_list"
+    fi
 
     if [[ ${#dirs[@]} -eq 0 ]]; then
         echo "No directories found in $GITHUB_PATH"
         return 1
     fi
+
+    # DEBUG: Skip sorting temporarily
+    # Sort directories (cross-platform)
+    # if [[ -n "$ZSH_VERSION" ]]; then
+    #     dirs=("${(o)dirs}")
+    # else
+    #     # Simple bubble sort for bash
+    #     n=${#dirs[@]}
+    #     for ((i=0; i<n; i++)); do
+    #         for ((j=0; j<n-i-1; j++)); do
+    #             if [[ "${dirs[$j]}" > "${dirs[$j+1]}" ]]; then
+    #                 temp="${dirs[$j]}"
+    #                 dirs[$j]="${dirs[$j+1]}"
+    #                 dirs[$j+1]="$temp"
+    #             fi
+    #         done
+    #     done
+    # fi
 
     # Display the directories
     echo ""
