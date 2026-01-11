@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Found Repo Madness at: $SCRIPT_DIR"
 
 # Make the main script executable
-chmod +x "$SCRIPT_DIR/repo_simple.sh"
+chmod +x "$SCRIPT_DIR/repo.sh"
 
 # Determine the shell profile file to modify
 SHELL_PROFILE=""
@@ -32,7 +32,7 @@ fi
 echo "Found shell profile: $SHELL_PROFILE"
 
 # Add the alias to the shell profile if it doesn't already exist
-ALIAS_LINE="alias repo='source \"$SCRIPT_DIR/repo_simple.sh\"'"
+ALIAS_LINE="alias repo='source \"$SCRIPT_DIR/repo.sh\"'"
 
 if ! grep -q "alias repo=" "$SHELL_PROFILE"; then
     echo "" >> "$SHELL_PROFILE"

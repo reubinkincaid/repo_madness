@@ -33,7 +33,7 @@ source ~/.zshrc  # or source ~/.bashrc
 git clone https://github.com/yourusername/repo_madness.git ~/tools/repo_madness
 
 # Add alias manually to your shell profile
-echo "alias repo='source ~/tools/repo_madness/repo_simple.sh'" >> ~/.zshrc
+echo "alias repo='source ~/tools/repo_madness/repo.sh'" >> ~/.zshrc
 
 # Reload your shell
 source ~/.zshrc
@@ -119,10 +119,7 @@ The tool automatically detects your shell and adjusts accordingly:
 
 ## Files
 
-- `repo_simple.sh` - Main script (pure bash, works everywhere)
-- `repo_find.sh` - Alternative implementation using find with -print0
-- `repo.sh` - Python wrapper (deprecated, not recommended)
-- `repo_navigator.py` - Python version (deprecated, not recommended)
+- `repo.sh` - Main script (pure bash, works everywhere)
 - `install.sh` - Automated installer
 - `README.md` - This file
 
