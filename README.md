@@ -138,14 +138,19 @@ The tool automatically detects your shell and adjusts accordingly:
 
 ## Customization
 
-Want to change the GitHub folder location? Edit `repo_simple.sh`:
+Want to change the default locations that get auto-detected? Edit `repo.sh` and modify the list:
 
 ```bash
 # Change this line:
-GITHUB_PATH="$HOME/Documents/GitHub"
+for path in "$HOME/Documents/GitHub" "$HOME/GitHub" "$HOME/Code" ...; do
 
-# To something like:
-GITHUB_PATH="$HOME/Code"
+# To add your own location:
+for path in "$HOME/Documents/GitHub" "$HOME/MyRepos" "$HOME/Dev" ...; do
+```
+
+Or simply set the environment variable in your shell profile:
+```bash
+export REPO_MADNESS_PATH="/path/to/your/repos"
 ```
 
 ## License
