@@ -40,9 +40,13 @@ source ~/.zshrc  # or source ~/.bashrc for bash
 
 ```bash
 git clone https://github.com/yourusername/repo_madness.git ~/tools/repo_madness
-echo "alias repo='source ~/tools/repo_madness/repo.sh'" >> ~/.zshrc
+echo "" >> ~/.zshrc
+echo "# Repo Madness - Quick access to GitHub repositories" >> ~/.zshrc
+echo "repo() { source ~/tools/repo_madness/repo.sh; }" >> ~/.zshrc
 source ~/.zshrc
 ```
+
+**Note**: Using a function instead of an alias ensures compatibility with tools like direnv that need to intercept `cd` commands.
 
 ### Windows Setup (Git Bash/WSL)
 
@@ -82,7 +86,7 @@ Run this command to complete the uninstallation.
 1. Remove these lines from your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
    ```bash
    # Repo Madness - Quick access to GitHub repositories
-   alias repo='source "/path/to/repo_madness/repo.sh"'
+   repo() { source "/path/to/repo_madness/repo.sh"; }
    export REPO_MADNESS_PATH="/your/custom/path"  # if you set one
    ```
 2. Delete the repo folder: `rm -rf ~/repo_madness`

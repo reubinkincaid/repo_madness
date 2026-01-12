@@ -34,24 +34,23 @@ fi
 
 echo "Found shell profile: $SHELL_PROFILE"
 
-# Add the alias to the shell profile
-ALIAS_LINE="alias repo='source \"$SCRIPT_DIR/repo.sh\"'"
+# Add the repo function to the shell profile
+# Using a function instead of alias for better compatibility with tools like direnv
+FUNCTION_LINE="repo() { source \"$SCRIPT_DIR/repo.sh\"; }"
 
-# Check if alias already exists (using simple pattern matching)
-REPO_ALIAS_EXISTS=false
-while IFS= read -r line; do
-    case "$line" in
-        *alias\ repo=*) REPO_ALIAS_EXISTS=true; break ;;
-    esac
-done < "$SHELL_PROFILE" 2>/dev/null || true
+# Check if repo function already exists
+REPO_FUNCTION_EXISTS=false
+if grep -q "repo()" "$SHELL_PROFILE" 2>/dev/null; then
+    REPO_FUNCTION_EXISTS=true
+fi
 
-if [[ "$REPO_ALIAS_EXISTS" == false ]]; then
+if [[ "$REPO_FUNCTION_EXISTS" == false ]]; then
     echo "" >> "$SHELL_PROFILE"
     echo "# Repo Madness - Quick access to GitHub repositories" >> "$SHELL_PROFILE"
-    echo "$ALIAS_LINE" >> "$SHELL_PROFILE"
-    echo "Alias added to $SHELL_PROFILE"
+    echo "$FUNCTION_LINE" >> "$SHELL_PROFILE"
+    echo "Function added to $SHELL_PROFILE"
 else
-    echo "Alias already exists in $SHELL_PROFILE"
+    echo "Repo function already exists in $SHELL_PROFILE"
     echo "If you want to update the path, manually edit: $SHELL_PROFILE"
 fi
 
@@ -86,3 +85,4 @@ echo "  • Navigate to any directory easily"
 echo "  • Supports filtering by name"
 echo "  • Works on macOS, Windows (Git Bash/WSL), and Linux"
 echo "  • Uninstall script included for easy removal"
+echo "  • Compatible with direnv and other shell tools"
