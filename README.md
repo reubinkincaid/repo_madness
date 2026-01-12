@@ -67,7 +67,7 @@ cd repo_madness
 ```
 
 The uninstall script will:
-- Remove the alias from your shell profile
+- Remove the repo function from your shell profile
 - Remove any custom path configuration
 - Provide a command to manually delete the repo folder (for safety)
 
