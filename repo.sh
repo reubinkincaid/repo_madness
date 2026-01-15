@@ -17,12 +17,12 @@ fi
 
 if [[ -z "$GITHUB_PATH" ]]; then
     echo "Could not find your repositories folder." >&2
-    return 1 2>/dev/null || exit 1
+    return 1
 fi
 
 if [[ ! -d "$GITHUB_PATH" ]]; then
     echo "Directory not found: $GITHUB_PATH" >&2
-    return 1 2>/dev/null || exit 1
+    return 1
 fi
 
 # Get all directories
@@ -48,7 +48,7 @@ fi
 
 if [[ ${#dirs[@]} -eq 0 ]]; then
     echo "No directories found in $GITHUB_PATH" >&2
-    return 1 2>/dev/null || exit 1
+    return 1
 fi
 
 # Display
@@ -82,7 +82,7 @@ while true; do
 
     if [[ "$choice" =~ ^[Qq]$ ]] || [[ "$choice" =~ ^[Qq][Uu][Ii][Tt]$ ]]; then
         echo "Exiting without navigation..." >&2
-        return 1 2>/dev/null || exit 1
+        return 1
     fi
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then
@@ -169,9 +169,10 @@ dir_path="$GITHUB_PATH/$selected_dir"
 if [[ -d "$dir_path" ]]; then
     echo ""
     echo "Selected directory: $dir_path"
-    cd "$dir_path" || { echo "Could not navigate to $dir_path"; return 1 2>/dev/null || exit 1; }
+    cd "$dir_path" || { echo "Could not navigate to $dir_path"; return 1; }
     echo "Successfully navigated to: $(pwd)"
+    return 0
 else
     echo "Directory path does not exist: $dir_path" >&2
-    return 1 2>/dev/null || exit 1
+    return 1
 fi

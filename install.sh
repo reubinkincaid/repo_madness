@@ -36,7 +36,7 @@ echo "Found shell profile: $SHELL_PROFILE"
 
 # Add the repo function to the shell profile
 # Using a function instead of alias for better compatibility with tools like direnv
-FUNCTION_LINE="repo() { source \"$SCRIPT_DIR/repo.sh\"; }"
+FUNCTION_LINE="repo() { source \"$SCRIPT_DIR/repo.sh\"; source ~/.zshrc 2>/dev/null || true; }"
 
 # Check if repo function already exists
 REPO_FUNCTION_EXISTS=false
